@@ -9,18 +9,7 @@ class App extends \DI\Bridge\Slim\App
 {
     protected function configureContainer(ContainerBuilder $builder)
     {
-        // Slim 3 settings
-        $settings = [
-            'settings.httpVersion' => '1.1',
-            'settings.responseChunkSize' => 4096,
-            'settings.outputBuffering' => 'append',
-            'settings.determineRouteBeforeAppMiddleware' => false,
-            'settings.displayErrorDetails' => getenv('debug_mode'),
-            'settings.addContentLengthHeader' => true,
-            'settings.routerCacheFile' => false,
-        ];
-
-        $builder->addDefinitions($settings);
+        $builder->addDefinitions(__DIR__ . '/settings.php');
 
         // Services
         $services = [
@@ -28,11 +17,11 @@ class App extends \DI\Bridge\Slim\App
                 $cfg = new \Spot\Config();
 
                 $cfg->addConnection('mysql', [
-                    'dbname' => getenv('db_name'),
-                    'user' => getenv('db_user'),
-                    'password' => getenv('db_pass'),
-                    'host' => getenv('db_host'),
-                    'port' => getenv('db_port'),
+                    'dbname' => \DI\get('db.name'),
+                    'user' => \DI\get('db.user'),
+                    'password' => \DI\get('db.pass'),
+                    'host' => \DI\get('db.host'),
+                    'port' => \DI\get('db.port'),
                     'driver' => 'pdo_mysql',
                 ]);
 
@@ -41,8 +30,8 @@ class App extends \DI\Bridge\Slim\App
                 return $spot;
             },
             '\Psr\Log\LoggerInterface::class' => function(ContainerInterface $container) {
-                $name = getenv('logger_name');
-                $filepath = __DIR__ . '/../log/' . getenv('logger_filename');
+                $name = \DI\get('logger.name');
+                $filepath = \DI\get('logger.path');
 
                 $logger = new \Monolog\Logger($name);
                 $logger->pushProcessor(new \Monolog\Processor\UidProcessor());

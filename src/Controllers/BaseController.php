@@ -10,9 +10,8 @@ class BaseController
     protected $db;
     protected $logger;
 
-    public function __construct(DB $db, Logger $logger)
+    public function __construct(DB $db)
     {
         $this->db = $db;
-        $this->logger = $logger;
     }
 }

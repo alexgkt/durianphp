@@ -1,7 +1,7 @@
 <?php
 
 return [
-  // Settings that can be customized by users
+    // Slim 3 settings
     'settings.httpVersion' => '1.1',
     'settings.responseChunkSize' => 4096,
     'settings.outputBuffering' => 'append',
@@ -10,12 +10,14 @@ return [
     'settings.addContentLengthHeader' => true,
     'settings.routerCacheFile' => false,
 
+    // DB Settings
     'db.name' => 'database',
     'db.user' => 'user',
     'db.pass' => 'password',
     'db.host' => 'localhost',
     'db.port' => '3306',
 
-    'logger.name' => 'app'
+    // Logger Settings
+    'logger.name' => 'app',
     'logger.path' => __DIR__ . '/../log/app.log',
 ];
