@@ -24,7 +24,7 @@ class App extends \DI\Bridge\Slim\App
 
         // Services
         $services = [
-            '\Spot\Locator::class' => function(ContainerInterface $c) {
+            '\Spot\Locator::class' => function(ContainerInterface $container) {
                 $cfg = new \Spot\Config();
 
                 $cfg->addConnection('mysql', [
@@ -40,13 +40,13 @@ class App extends \DI\Bridge\Slim\App
 
                 return $spot;
             },
-            '\Monolog\Logger::class' => function(ContainerInterface $c){
+            '\Psr\Log\LoggerInterface::class' => function(ContainerInterface $container) {
                 $name = getenv('logger_name');
                 $filepath = __DIR__ . '/../log/' . getenv('logger_filename');
 
-                $logger = new Monolog\Logger($name);
-                $logger->pushProcessor(new Monolog\Processor\UidProcessor());
-                $logger->pushHandler(new Monolog\Handler\StreamHandler($filepath, Monolog\Logger::DEBUG));
+                $logger = new \Monolog\Logger($name);
+                $logger->pushProcessor(new \Monolog\Processor\UidProcessor());
+                $logger->pushHandler(new \Monolog\Handler\StreamHandler($filepath, \Monolog\Logger::DEBUG));
 
                 return $logger;
             }
