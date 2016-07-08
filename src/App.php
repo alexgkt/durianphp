@@ -13,7 +13,7 @@ class App extends \DI\Bridge\Slim\App
 
         // Services
         $services = [
-            '\Spot\Locator::class' => function(ContainerInterface $container) {
+            \Spot\Locator::class => function(ContainerInterface $container) {
                 $cfg = new \Spot\Config();
 
                 $cfg->addConnection('mysql', [
@@ -29,7 +29,28 @@ class App extends \DI\Bridge\Slim\App
 
                 return $spot;
             },
-            '\Psr\Log\LoggerInterface::class' => function(ContainerInterface $container) {
+            \League\OAuth2\Server\AuthorizationServer::class => function (ContainerInterface $container) {
+                // Setup the authorization server
+                $server = new AuthorizationServer(
+                    new \App\Repositories\ClientRepository(),         // instance of ClientRepositoryInterface
+                    new \App\Repositories\AccessTokenRepository(),    // instance of AccessTokenRepositoryInterface
+                    new \App\Repositories\ScopeRepository(),          // instance of ScopeRepositoryInterface
+                    'file://'.__DIR__.'/../data/private.key',         // path to private key
+                    'file://'.__DIR__.'/../data/public.key'           // path to public key
+                );
+                $grant = new PasswordGrant(
+                    new \App\Repositories\UserRepository(),           // instance of UserRepositoryInterface
+                    new \App\Repositories\RefreshTokenRepository()    // instance of RefreshTokenRepositoryInterface
+                );
+                $grant->setRefreshTokenTTL(new \DateInterval('P1M')); // refresh tokens will expire after 1 month
+                // Enable the password grant on the server with a token TTL of 1 hour
+                $server->enableGrantType(
+                    $grant,
+                    new \DateInterval('PT1H') // access tokens will expire after 1 hour
+                );
+                return $server;
+            },
+            \Psr\Log\LoggerInterface::class => function(ContainerInterface $container) {
                 $name = \DI\get('logger.name');
                 $filepath = \DI\get('logger.path');
 
