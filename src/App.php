@@ -9,29 +9,30 @@ class App extends \DI\Bridge\Slim\App
 {
     protected function configureContainer(ContainerBuilder $builder)
     {
+        //$builder->useAutowiring(false);
         $builder->addDefinitions(__DIR__ . '/settings.php');
 
         // Services
         $services = [
-            '\Spot\Locator::class' => function(ContainerInterface $container) {
-                $cfg = new \Spot\Config();
+            \Doctrine\DBAL\Connection::class => function(ContainerInterface $container) {
+                $config = new \Doctrine\DBAL\Configuration();
 
-                $cfg->addConnection('mysql', [
-                    'dbname' => \DI\get('db.name'),
-                    'user' => \DI\get('db.user'),
-                    'password' => \DI\get('db.pass'),
-                    'host' => \DI\get('db.host'),
-                    'port' => \DI\get('db.port'),
+                $connectionParams = array(
+                    'dbname' => $container->get('db.name'),
+                    'user' => $container->get('db.user'),
+                    'password' => $container->get('db.pass'),
+                    'host' => $container->get('db.host'),
+                    'port' => $container->get('db.port'),
+                    'charset' => 'utf8',
                     'driver' => 'pdo_mysql',
-                ]);
+                );
+                $dbh = \Doctrine\DBAL\DriverManager::getConnection($connectionParams, $config);
 
-                $spot = new \Spot\Locator($cfg);
-
-                return $spot;
+                return $dbh;
             },
-            '\Psr\Log\LoggerInterface::class' => function(ContainerInterface $container) {
-                $name = \DI\get('logger.name');
-                $filepath = \DI\get('logger.path');
+            \Psr\Log\LoggerInterface::class => function(ContainerInterface $container) {
+                $name = $container->get('logger.name');
+                $filepath = $container->get('logger.path');
 
                 $logger = new \Monolog\Logger($name);
                 $logger->pushProcessor(new \Monolog\Processor\UidProcessor());

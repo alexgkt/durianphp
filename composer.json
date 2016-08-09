@@ -14,8 +14,9 @@
     "require": {
         "slim/slim": "^3.4",
         "monolog/monolog": "^1.17",
-        "vlucas/spot2": "^2.1",
-        "php-di/slim-bridge": "^1.0"
+        "php-di/slim-bridge": "^1.0",
+        "doctrine/dbal": "^2.5",
+        "vlucas/valitron": "^1.2"
     },
     "autoload": {
         "psr-4": {
@@ -23,4 +24,3 @@
         }
     }
 }
-
